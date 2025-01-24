@@ -5,8 +5,6 @@ import numpy as np
 import pandas as pd
 import sys
 from scipy.optimize import curve_fit
-from scipy.stats import stats
-from scipy.stats import chisquare
 
 def function(x, a, b, c):
     y = a/(x + b)**c
@@ -56,14 +54,14 @@ for f in files:
                 df.iloc[i, 1] = float(df.iloc[i, 1]) - float(df_back.iloc[i, 1])
         for i in range(lower_channel, upper_channel + 1):
             summation += float(df.iloc[i, 1])
-        integrals.append(int(summation))
+        integrals.append(float(summation) / float(live_times[indexer]))
         indexer += 1
         summation = 0
     except FileNotFoundError:
         print("Couldn't find file.")
         sys.exit(1)
 
-parameters, covariance = curve_fit(function, distances, integrals, p0 = [900000, 1, 2])
+parameters, covariance = curve_fit(function, distances, integrals, p0 = [40000, 3, 2])
 print(parameters)
 fit_x = np.arange(min(distances), max(distances), 0.01)
 fit_y = function(fit_x, *parameters)
